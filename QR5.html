@@ -1,0 +1,60 @@
+<!-- ========================= 4) qr5.html ========================= -->
+<body>
+<div class="wrap">
+<h1>CASE‑89915202 · PAGE E</h1>
+<div class="card">
+<p class="muted">Get a cab to <strong>Apameh</strong> (next to Tanak). On the way, translate the name into Morse and enter it below.</p>
+<label for="morse">Morse for “APAMEH”</label>
+<input id="morse" type="text" placeholder="e.g., .- .--. .- -- . ...." autocomplete="off" />
+<div style="margin-top:12px">
+<button id="go5" class="btn">Submit</button>
+</div>
+<div id="msg5" style="margin-top:10px"></div>
+<div id="spin5" class="spinner">
+<div class="bar"><div class="fill" id="fill5"></div></div>
+<p id="timer5" class="muted">Processing… 03:00</p>
+</div>
+<div id="ok5" class="hint" style="display:none"></div>
+<div id="bad5" class="hint" style="display:none"></div>
+</div>
+<div class="card">
+<button id="hintBtn5" class="btn" style="background:#2a3340;border-color:#3a4454">Show hint</button>
+<div id="hint5" class="hint">International Morse: A=.-, P=.--., M=--, E=., H=.... → <code>.- .--. .- -- . ....</code>. You may separate letters with spaces or slashes.</div>
+<div class="footer">Style brief appears on success. · CASE‑89915202</div>
+</div>
+</div>
+<script>
+// ======= CONFIG =======
+const CORRECT = ".- .--. .- -- . ...."; // APAMEH
+const WEBHOOK_URL = ""; // e.g., https://maker.ifttt.com/trigger/case_ping/with/key/YOUR_KEY
+const STYLE_TEXT = "Choose one cozy knit and one bold‑color piece at Tanak."; // <-- edit your brief
+const SPIN_MS = 180000;
+
+
+const el=(id)=>document.getElementById(id);
+function normMorse(s){
+return (s||'').trim().replace(/\s+/g,' ').replace(/\s*\/\s*/g,' '); // normalize slashes to spaces
+}
+function sameMorse(a,b){ return normMorse(a)===normMorse(b); }
+function ping(payload){ if(!WEBHOOK_URL) return; try{ fetch(WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});}catch(e){} }
+function spin(elFill, elTimer, ms, done){ let left=ms; const step=500; const iv=setInterval(()=>{left-=step; const p=1-(left/ms); elFill.style.width=(p*100)+'%'; const m=Math.max(0,Math.floor(left/60000)); const s=Math.max(0,Math.floor((left%60000)/1000)); elTimer.textContent=`Processing… ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; if(left<=0){clearInterval(iv); done();}},step);}
+
+
+el('go5').addEventListener('click',()=>{
+el('ok5').style.display=el('bad5').style.display='none'; el('msg5').textContent='';
+const ok = sameMorse(el('morse').value, CORRECT);
+if(!ok){ el('bad5').style.display='block'; el('bad5').textContent='Filed. The analyst hears a different pattern of dots and dashes.'; return; }
+// correct → ping + spinner → success
+ping({page:'QR5', code:'APAMEH', case:'89915202', ts:new Date().toISOString()});
+el('spin5').style.display='block';
+spin(el('fill5'), el('timer5'), SPIN_MS, ()=>{
+el('ok5').style.display='block';
+el('ok5').innerHTML = '<span style="color:#1ec8a5">Resolved.</span> '+STYLE_TEXT;
+});
+});
+el('hintBtn5').addEventListener('click',()=>{
+const h=el('hint5'); h.style.display = (h.style.display==='block')?'none':'block';
+});
+</script>
+</body>
+</html>
