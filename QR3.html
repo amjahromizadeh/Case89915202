@@ -1,59 +1,61 @@
-<!-- ========================= 2) qr3.html ========================= -->
-<h1>CASE‑89915202 · PAGE C</h1>
-<div class="card">
-<p class="muted">Type the keypad path for the word we used at the counter.</p>
-<label for="t9">Enter T9 digits (or the word)</label>
-<input id="t9" type="text" inputmode="numeric" placeholder="e.g., 225464" autocomplete="off" />
-<div style="margin-top:12px">
-<button id="go3" class="btn">Submit</button>
-</div>
-<div id="out" class="hint" style="display:none"></div>
-<div id="fail3" class="hint" style="display:none"></div>
-</div>
-<div class="card">
-<button id="hintBtn3" class="btn" style="background:#2a3340;border-color:#3a4454">Show hint</button>
-<div id="hint3" class="hint">Map <strong>BAKING</strong> on a classic <strong>T9</strong> phone keypad (A/B/C=2… W/X/Y/Z=9). Valid examples: 225464, 22‑54‑64, or the word “baking”.</div>
-<div class="footer">Two words. Green, public. · CASE‑89915202</div>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>CASE-89915202 · QR-3</title>
+<style>
+ body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;line-height:1.5;margin:0;background:#0b0e12;color:#e7edf5}
+ .wrap{max-width:720px;margin:0 auto;padding:28px}
+ h1{font-size:22px;margin:0 0 8px}
+ .card{background:#151a22;border:1px solid #222b36;border-radius:14px;padding:20px;margin:16px 0;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+ label{display:block;margin:10px 0 6px;font-weight:600}
+ input,button{font:inherit}
+ input[type=text]{width:100%;padding:12px 14px;border-radius:10px;border:1px solid #364150;background:#0f1319;color:#dfe7f1}
+ .btn{padding:11px 16px;border-radius:12px;border:1px solid #3a8bff;background:#1677ff;color:#fff;cursor:pointer}
+ .muted{color:#9fb0c3}
+ .hint{margin-top:10px;padding:12px;border:1px dashed #3a4454;border-radius:10px;display:none}
+ .footer{margin-top:24px;color:#6f8096;font-size:13px}
+ .big{font-size:28px;letter-spacing:.12em}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>CASE-89915202 · PAGE C</h1>
+  <div class="card">
+    <p class="muted">What are the utensils for? <em>Translate into the language of old phones.</em></p>
+    <label for="t9">Enter T9 digits (or the word)</label>
+    <input id="t9" type="text" inputmode="numeric" placeholder="e.g., 246843" autocomplete="off"/>
+    <div style="margin-top:12px"><button id="go" class="btn">Submit</button></div>
+    <div id="out" class="hint" style="display:none"></div>
+    <div id="fail" class="hint" style="display:none"></div>
+  </div>
+  <div class="card">
+    <button id="hintBtn" class="btn" style="background:#2a3340;border-color:#3a4454">Show hint</button>
+    <div id="hint" class="hint">The smell of pastries is the result of this <em>verb</em>; old phones talk in <strong>T9</strong>.</div>
+    <div class="footer">CASE-89915202</div>
+  </div>
 </div>
 <script>
-const ok = document.getElementById('out');
-const fail = document.getElementById('fail3');
-const inp = document.getElementById('t9');
-const btn = document.getElementById('go3');
-const map = {a:2,b:2,c:2,d:3,e:3,f:3,g:4,h:4,i:4,j:5,k:5,l:5,m:6,n:6,o:6,p:7,q:7,r:7,s:7,t:8,u:8,v:8,w:9,x:9,y:9,z:9};
-
-
-function toT9(w){
-return (w||'').toLowerCase().split('').map(ch=>map[ch]||'').join('');
-}
-function norm(s){ return (s||'').toLowerCase().replace(/[^a-z0-9]/g,''); }
-
-
-function accepted(s){
-const n = norm(s);
-if(n==='225464') return true; // digits
-if(n==='baking') return true; // allow word
-// also allow spaced/hyphenated forms implicitly via norm()
-return false;
-}
-
-
-btn.addEventListener('click',()=>{
-ok.style.display=fail.style.display='none';
-if(!accepted(inp.value)){
-fail.style.display='block';
-fail.textContent = 'Filed. The analyst can’t match those digits to the tool. Try another keypad path.';
-return;
-}
-ok.style.display='block';
-ok.innerHTML = '<div class="big">K A P R &nbsp; L E T &nbsp; M A L</div><div class="muted" style="margin-top:6px">Rearrange to name the place.</div>';
-});
-
-
-document.getElementById('hintBtn3').addEventListener('click',()=>{
-const h=document.getElementById('hint3'); h.style.display = (h.style.display==='block')?'none':'block';
-});
+  const ok = document.getElementById('out');
+  const fail = document.getElementById('fail');
+  const inp = document.getElementById('t9');
+  const btn = document.getElementById('go');
+  function norm(s){ return (s||'').toLowerCase().replace(/[^a-z0-9]/g,''); }
+  btn.addEventListener('click',()=>{
+    ok.style.display=fail.style.display='none';
+    const n = norm(inp.value);
+    const valid = (n==='225464' || n==='baking' ); // 225464 = BAKING
+    if(!valid){
+      fail.style.display='block';
+      fail.textContent = 'Filed. The analyst can’t match those digits to the tool. Try another keypad path.';
+      return;
+    }
+    ok.style.display='block';
+    ok.innerHTML = '<div class="big">K A P R &nbsp; L E T &nbsp; M A L</div>';
+  });
+  document.getElementById('hintBtn').addEventListener('click',()=>{
+    const h=document.getElementById('hint'); h.style.display = (h.style.display==='block')?'none':'block';
+  });
 </script>
 </body>
 </html>
