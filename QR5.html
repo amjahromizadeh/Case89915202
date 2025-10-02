@@ -27,14 +27,14 @@
   <h1>CASE-89915202 · PAGE E</h1>
   <div class="card">
     <p class="muted">We have to head to <strong>“Apameh”</strong>. Meanwhile, on the way, translate the destination to the language in which <em>SOS</em> is the easiest.</p>
-    <label class="muted">Enter six Morse letters (use <code>.</code> and <code>-</code>) — separate letters are given as boxes</label>
+    <label class="muted">Separate letters are given as boxes</label>
     <div class="row">
-      <input class="morse" id="m1" type="text" placeholder="."  autocomplete="off"/>
-      <input class="morse" id="m2" type="text" placeholder=".--." autocomplete="off"/>
-      <input class="morse" id="m3" type="text" placeholder=".-" autocomplete="off"/>
-      <input class="morse" id="m4" type="text" placeholder="--" autocomplete="off"/>
-      <input class="morse" id="m5" type="text" placeholder="." autocomplete="off"/>
-      <input class="morse" id="m6" type="text" placeholder="...." autocomplete="off"/>
+      <input class="morse" id="m1" type="text" autocomplete="off"/>
+      <input class="morse" id="m2" type="text" autocomplete="off"/>
+      <input class="morse" id="m3" type="text" autocomplete="off"/>
+      <input class="morse" id="m4" type="text" autocomplete="off"/>
+      <input class="morse" id="m5" type="text" autocomplete="off"/>
+      <input class="morse" id="m6" type="text" autocomplete="off"/>
     </div>
     <div style="margin-top:12px"><button id="go" class="btn">Submit</button></div>
     <div id="msg" style="margin-top:10px"></div>
@@ -52,13 +52,13 @@
   // CONFIG
   const STYLE_TEXT = "Choose one cozy knit and one bold-color piece at Tanak.";
   const SPIN_MS = 180000;
-  const WEBHOOK_URL = ""; // paste IFTTT Webhooks URL if using
+  const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxBhNDW0jIUIP_WS7TtAZ_xNkARFSFgadSMBrzUZXObie7IItPKQsNMMpl9_qv3tOBl/exec";
 
   const A='.-', P='.--.', M='--', E='.', H='....';
   const TARGET = [A,P,A,M,E,H];
 
   const el = id=>document.getElementById(id);
-  function norm(s){ return (s||'').trim().replace(/\s+/g,''); } // allow dots/dashes only
+  function norm(s){ return (s||'').trim().replace(/\s+/g,''); }
 
   function valid(){
     const vals = [norm(el('m1').value),norm(el('m2').value),norm(el('m3').value),norm(el('m4').value),norm(el('m5').value),norm(el('m6').value)];
