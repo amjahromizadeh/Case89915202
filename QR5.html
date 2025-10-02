@@ -52,8 +52,9 @@
   // CONFIG
   const STYLE_TEXT = "Choose one cozy piece for indoor, and one flashy dress for outside";
   const SPIN_MS = 120000;
-  const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxBhNDW0jIUIP_WS7TtAZ_xNkARFSFgadSMBrzUZXObie7IItPKQsNMMpl9_qv3tOBl/exec";
+  const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbx1tp1ADRdqTw7SBn839WNomfzXRUASG5duGpwMS1IhLLlBHv1IB12uXqA7tHYqNb8r/exec";
 
+  // Morse letters for A P A M E H
   const A='.-', P='.--.', M='--', E='.', H='....';
   const TARGET = [A,P,A,M,E,H];
 
@@ -65,7 +66,19 @@
     for(let i=0;i<6;i++){ if(vals[i]!==TARGET[i]) return false; }
     return true;
   }
-  function ping(payload){ if(!WEBHOOK_URL) return; try{ fetch(WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});}catch(e){} }
+
+  // Preflight-free POST (no headers, no-cors)
+  function ping(payload){
+    if(!WEBHOOK_URL) return;
+    try{
+      fetch(WEBHOOK_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: JSON.stringify(payload)
+      });
+    }catch(e){}
+  }
+
   function spin(onDone){
     el('spin').style.display='block'; let left=SPIN_MS; const step=500;
     const iv=setInterval(()=>{ left-=step; const p=1-(left/SPIN_MS);
@@ -75,6 +88,7 @@
       if(left<=0){ clearInterval(iv); onDone(); }
     },step);
   }
+
   el('go').addEventListener('click',()=>{
     el('ok').style.display=el('bad').style.display='none';
     if(!valid()){
@@ -86,7 +100,10 @@
     ping({page:'QR5', code:'APAMEH', case:'89915202', ts:new Date().toISOString()});
     spin(()=>{ el('ok').style.display='block'; el('ok').innerHTML='<span style="color:#1ec8a5">Resolved.</span> '+STYLE_TEXT; });
   });
-  el('hintBtn').addEventListener('click',()=>{ const h=el('hint'); h.style.display=(h.style.display==='block')?'none':'block'; });
+
+  el('hintBtn').addEventListener('click',()=>{
+    const h=el('hint'); h.style.display=(h.style.display==='block')?'none':'block';
+  });
 </script>
 </body>
 </html>
