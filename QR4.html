@@ -1,74 +1,79 @@
-<!-- ========================= 3) qr4.html ========================= -->
-<title>CASE-89915202 · QR‑4</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>CASE-89915202 · QR-4</title>
 <style>
-body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;line-height:1.5;margin:0;background:#0b0e12;color:#e7edf5}
-.wrap{max-width:800px;margin:0 auto;padding:28px}
-h1{font-size:22px;margin:0 0 8px}
-.card{background:#151a22;border:1px solid #222b36;border-radius:14px;padding:20px;margin:16px 0;box-shadow:0 6px 20px rgba(0,0,0,.25)}
-.btn{padding:11px 16px;border-radius:12px;border:1px solid #3a8bff;background:#1677ff;color:#fff;cursor:pointer}
-.muted{color:#9fb0c3}
-.hint{margin-top:10px;padding:12px;border:1px dashed #3a4454;border-radius:10px;display:none}
-input[type=text]{width:100%;padding:12px 14px;border-radius:10px;border:1px solid #364150;background:#0f1319;color:#dfe7f1}
+ body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;line-height:1.5;margin:0;background:#0b0e12;color:#e7edf5}
+ .wrap{max-width:800px;margin:0 auto;padding:28px}
+ h1{font-size:22px;margin:0 0 8px}
+ .card{background:#151a22;border:1px solid #222b36;border-radius:14px;padding:20px;margin:16px 0;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+ .btn{padding:11px 16px;border-radius:12px;border:1px solid #3a8bff;background:#1677ff;color:#fff;cursor:pointer}
+ .muted{color:#9fb0c3}
+ .hint{margin-top:10px;padding:12px;border:1px dashed #3a4454;border-radius:10px;display:none}
+ input[type=text]{width:100%;padding:12px 14px;border-radius:10px;border:1px solid #364150;background:#0f1319;color:#dfe7f1}
+ .poem{white-space:pre-wrap;border-left:3px solid #2b3340;padding-left:12px;margin:12px 0}
 </style>
 </head>
 <body>
 <div class="wrap">
-<h1>CASE‑89915202 · PAGE D</h1>
-<div class="card">
-<p class="muted">Your stanza goes here. Readers will derive coordinates from its <em>structure</em>.</p>
-<div id="poem" class="muted" style="white-space:pre-wrap; border-left:3px solid #2b3340; padding-left:12px; margin:12px 0">
-( Paste your poem here. Pattern B: letters-per-line.
-— Line 1 (North, degrees): exactly 35 letters (ignore spaces/punctuation)
-— Line 2 (North, decimals): 6 slash-separated mini-phrases with letters counts 7/7/1/3/6/8
-— Line 3 (East, degrees): exactly 51 letters
-— Line 4 (East, decimals): 6 slash-separated mini-phrases with letters counts 4/2/0/7/9/6
-Hint: for the 0, either use a blank mini-phrase between slashes (//) or write “zero” and add a note in your poem that readers should “count letters, not meanings”. )
-</div>
-</div>
+  <h1>CASE-89915202 · PAGE D</h1>
 
+  <div class="card">
+    <p class="muted">Read the stanza; its <em>structure</em> encodes a place.</p>
+    <div class="poem">
+Dancing in my red brain, glee fills my north
+Message/Tweeter/I/You/Flames/Scorches
+Prisoners in middle east, your presence fills time with worth
+Love/Is/-/Problem/Solutions/Herein
+    </div>
+  </div>
 
-<div class="card">
-<label for="coords" class="muted">Enter coordinates (format: 35.771368, 51.420796)</label>
-<input id="coords" type="text" placeholder="N DD.DDDDDD, E DD.DDDDDD" autocomplete="off" />
-<div style="margin-top:12px"><button id="check" class="btn">Submit</button></div>
-<div id="ok4" class="hint" style="display:none"></div>
-<div id="bad4" class="hint" style="display:none"></div>
-</div>
+  <div class="card">
+    <label for="coords" class="muted">Enter coordinates (format: NN.NNNNNN, EE.EEEEEE)</label>
+    <input id="coords" type="text" placeholder="e.g., 12.345678, 98.765432" autocomplete="off"/>
+    <div style="margin-top:12px"><button id="check" class="btn">Submit</button></div>
+    <div id="ok" class="hint" style="display:none"></div>
+    <div id="bad" class="hint" style="display:none"></div>
+  </div>
 
-
-<div class="card">
-<button id="hintBtn4" class="btn" style="background:#2a3340;border-color:#3a4454">Show hint</button>
-<div id="hint4" class="hint">Count <strong>letters</strong>, not spaces. Line 1 → North degrees (35). Line 2 → 6 groups for decimals (7/7/1/3/6/8 → .771368). Line 3 → East degrees (51). Line 4 → 6 groups (4/2/0/7/9/6 → .420796). Format: <code>35.771368, 51.420796</code>.</div>
-<div class="muted" style="margin-top:10px">If you prefer exact full precision, you can accept more decimals; we validate a rounded form.</div>
-</div>
+  <div class="card">
+    <button id="hintBtn" class="btn" style="background:#2a3340;border-color:#3a4454">Show hint</button>
+    <div id="hint" class="hint">
+      Letters are what count, words without spaces, dashes are null.
+      First couple head north, second couple head east.
+      Lines break and decimals are born.
+    </div>
+  </div>
 </div>
 <script>
-const TARGET_LAT = 35.771368; // rounded to 6 decimals
-const TARGET_LON = 51.420796;
-const ok = document.getElementById('ok4');
-const bad = document.getElementById('bad4');
-function parse(s){
-if(!s) return null;
-const m = s.trim().replace(/\s+/g,'').match(/^(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)$/);
-if(!m) return null;
-return {lat:parseFloat(m[1]), lon:parseFloat(m[2])};
-}
-document.getElementById('check').addEventListener('click',()=>{
-ok.style.display=bad.style.display='none';
-const v = parse(document.getElementById('coords').value);
-if(!v){ bad.style.display='block'; bad.textContent='Filed. The analyst expected two decimals separated by a comma.'; return; }
-const latOk = Math.abs(v.lat - TARGET_LAT) < 0.00001; // ~1m tolerance
-const lonOk = Math.abs(v.lon - TARGET_LON) < 0.00001;
-if(latOk && lonOk){
-ok.style.display='block';
-ok.innerHTML = '<span style="color:#1ec8a5">Resolved.</span> <a class="btn" href="https://maps.google.com/?q='+v.lat+','+v.lon+'" target="_blank" rel="noopener">Open in Maps</a>';
-} else {
-bad.style.display='block'; bad.textContent='Filed. The analyst notes a mismatch in one or more digits. Try again.';
-}
-});
-document.getElementById('hintBtn4').addEventListener('click',()=>{
-const h=document.getElementById('hint4'); h.style.display = (h.style.display==='block')?'none':'block';
-});
+  // target rounded to 6 decimals
+  const TARGET_LAT = 35.771368, TARGET_LON = 51.420796;
+  const ok = document.getElementById('ok');
+  const bad = document.getElementById('bad');
+
+  function parse(s){
+    if(!s) return null;
+    const m = s.trim().replace(/\s+/g,'').match(/^(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)$/);
+    if(!m) return null;
+    return {lat:parseFloat(m[1]), lon:parseFloat(m[2])};
+  }
+  document.getElementById('check').addEventListener('click',()=>{
+    ok.style.display=bad.style.display='none';
+    const v=parse(document.getElementById('coords').value);
+    if(!v){ bad.style.display='block'; bad.textContent='Filed. The analyst expected two decimals separated by a comma.'; return; }
+    const latOk = Math.abs(v.lat - TARGET_LAT) < 0.00001;
+    const lonOk = Math.abs(v.lon - TARGET_LON) < 0.00001;
+    if(latOk && lonOk){
+      ok.style.display='block';
+      ok.innerHTML = '<span style="color:#1ec8a5">Resolved.</span> <a class="btn" href="https://maps.google.com/?q='+v.lat+','+v.lon+'" target="_blank" rel="noopener">Open in Maps</a>';
+    } else {
+      bad.style.display='block'; bad.textContent='Filed. The analyst notes a mismatch in one or more digits. Try again.';
+    }
+  });
+  document.getElementById('hintBtn').addEventListener('click',()=>{
+    const h=document.getElementById('hint'); h.style.display=(h.style.display==='block')?'none':'block';
+  });
 </script>
 </body>
 </html>
