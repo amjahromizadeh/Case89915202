@@ -35,7 +35,7 @@
     <div id="msg" style="margin-top:10px"></div>
     <div id="spin" class="spinner">
       <div class="bar"><div class="fill" id="fill"></div></div>
-      <p id="timer" class="muted">Processing… 03:00</p>
+      <p id="timer" class="muted">Processing… 02:00</p>
     </div>
     <div id="success" class="hint" style="display:none"></div>
     <div id="fail" class="hint" style="display:none"></div>
@@ -54,7 +54,7 @@
   const CORRECT = "2020-10-07";
   const MAPS_URL = "https://maps.app.goo.gl/eKMjcZdP1p31S5w89"; // baking shop
   const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxBhNDW0jIUIP_WS7TtAZ_xNkARFSFgadSMBrzUZXObie7IItPKQsNMMpl9_qv3tOBl/exec";
-  const SPIN_MS = 180000; // 3 minutes
+  const SPIN_MS = 120000; // 2 minutes
 
   const el = id => document.getElementById(id);
   const go=el('go'), inp=el('dateIn'), spin=el('spin'), fill=el('fill'), timer=el('timer');
