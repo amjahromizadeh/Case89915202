@@ -1,56 +1,99 @@
-const el = (id)=>document.getElementById(id);
-const go=el('go'), inp=el('dateIn'), spin=el('spin'), fill=el('fill'), timer=el('timer');
-const ok=el('success'), fail=el('fail'), msg=el('msg');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>CASE-89915202 · QR-2</title>
+<style>
+ body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;line-height:1.5;margin:0;background:#0b0e12;color:#e7edf5}
+ .wrap{max-width:720px;margin:0 auto;padding:28px}
+ h1{font-size:22px;margin:0 0 8px}
+ .card{background:#151a22;border:1px solid #222b36;border-radius:14px;padding:20px;margin:16px 0;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+ label{display:block;margin:10px 0 6px;font-weight:600}
+ input,button{font:inherit}
+ input[type=text]{width:100%;padding:12px 14px;border-radius:10px;border:1px solid #364150;background:#0f1319;color:#dfe7f1}
+ .btn{padding:11px 16px;border-radius:12px;border:1px solid #3a8bff;background:#1677ff;color:#fff;cursor:pointer}
+ .btn[disabled]{opacity:.6;cursor:not-allowed}
+ .muted{color:#9fb0c3}
+ .hint{margin-top:10px;padding:12px;border:1px dashed #3a4454;border-radius:10px;display:none}
+ .footer{margin-top:24px;color:#6f8096;font-size:13px}
+ .spinner{display:none;margin-top:16px}
+ .bar{height:10px;background:#253040;border-radius:6px;overflow:hidden}
+ .fill{height:100%;width:0;background:#1ec8a5;transition:width .5s ease}
+ a.btnlink{display:inline-block;margin-top:12px}
+ .ok{color:#1ec8a5}.err{color:#ff8b8b}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>CASE-89915202 · PAGE B</h1>
+  <div class="card">
+    <p class="muted">Enter the date. Format: <strong>YYYY-MM-DD</strong>.</p>
+    <label for="dateIn">Meet date</label>
+    <input id="dateIn" type="text" inputmode="numeric" placeholder="e.g., 1999-01-05" autocomplete="off"/>
+    <div style="margin-top:12px"><button id="go" class="btn">Submit</button></div>
+    <div id="msg" style="margin-top:10px"></div>
+    <div id="spin" class="spinner">
+      <div class="bar"><div class="fill" id="fill"></div></div>
+      <p id="timer" class="muted">Processing… 03:00</p>
+    </div>
+    <div id="success" class="hint" style="display:none"></div>
+    <div id="fail" class="hint" style="display:none"></div>
+  </div>
 
+  <div class="card">
+    <button id="hintBtn" class="btn" style="background:#2a3340;border-color:#3a4454">Show hint</button>
+    <div id="hint" class="hint">
+      Read the <strong>section titles</strong>: the month is spelled by initials, the <strong>7th</strong> word hints the day, and the split hyphen shows the <strong>year</strong>. Format: YYYY-MM-DD.
+    </div>
+    <div class="footer">If offline, ask your handler. · CASE-89915202</div>
+  </div>
+</div>
+<script>
+  // ======= CONFIG =======
+  const CORRECT = "2020-10-07";
+  const MAPS_URL = "https://maps.app.goo.gl/eKMjcZdP1p31S5w89"; // baking shop
+  const WEBHOOK_URL = ""; // paste IFTTT webhook URL if using
+  const SPIN_MS = 180000; // 3 minutes
 
-function normalizeDate(s){
-return (s||'').trim();
-}
+  const el = id => document.getElementById(id);
+  const go=el('go'), inp=el('dateIn'), spin=el('spin'), fill=el('fill'), timer=el('timer');
+  const ok=el('success'), fail=el('fail');
 
+  function pingWebhook(payload){
+    if(!WEBHOOK_URL) return;
+    try{ fetch(WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); }catch(e){}
+  }
+  function startSpinner(onDone){
+    spin.style.display='block'; let left=SPIN_MS; const step=500;
+    const iv=setInterval(()=>{ left-=step; const p=1-(left/SPIN_MS);
+      fill.style.width=(p*100).toFixed(1)+'%';
+      const m=Math.max(0,Math.floor(left/60000));
+      const s=Math.max(0,Math.floor((left%60000)/1000));
+      timer.textContent=`Processing… ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      if(left<=0){ clearInterval(iv); onDone(); }
+    },step);
+  }
 
-function pingWebhook(payload){
-if(!WEBHOOK_URL) return;
-try{
-fetch(WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-}catch(e){/* ignore */}
-}
+  go.addEventListener('click',()=>{
+    ok.style.display=fail.style.display='none';
+    const val = (inp.value||'').trim();
+    if(val!==CORRECT){
+      fail.style.display='block';
+      fail.innerHTML = '<span class="err">Filed.</span> The analyst notes doubt the date. Try again.';
+      return;
+    }
+    pingWebhook({page:'QR2', code:val, case:'89915202', ts:new Date().toISOString()});
+    go.disabled = true; inp.disabled = true;
+    startSpinner(()=>{
+      ok.style.display='block';
+      ok.innerHTML = `<span class="ok">Resolved.</span> <a class="btn btnlink" href="${MAPS_URL}" target="_blank" rel="noopener">Open in Maps</a>`;
+    });
+  });
 
-
-function startSpinner(onDone){
-spin.style.display='block';
-let left = SPIN_MS; const step=500;
-const iv = setInterval(()=>{
-left-=step; const p=1-(left/SPIN_MS);
-fill.style.width = (p*100).toFixed(1)+'%';
-const m = Math.max(0, Math.floor(left/60000));
-const s = Math.max(0, Math.floor((left%60000)/1000));
-timer.textContent = `Processing… ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-if(left<=0){ clearInterval(iv); onDone(); }
-}, step);
-}
-
-
-go.addEventListener('click',()=>{
-ok.style.display=fail.style.display='none'; msg.textContent='';
-const val = normalizeDate(inp.value);
-if(val!==CORRECT){
-fail.style.display='block';
-fail.innerHTML = '<span class="err">Filed.</span> The analyst notes doubt the date. Try again.';
-return;
-}
-// Correct → ping, then spinner → success
-pingWebhook({page:'QR2', code:val, case:'89915202', ts:new Date().toISOString()});
-go.disabled = true; inp.disabled = true;
-startSpinner(()=>{
-ok.style.display='block';
-ok.innerHTML = `<span class="ok">Resolved.</span> <a class="btn btnlink" href="${MAPS_URL}" target="_blank" rel="noopener">Open in Maps</a>`;
-});
-});
-
-
-el('hintBtn').addEventListener('click',()=>{
-const h=el('hint'); h.style.display = (h.style.display==='block')?'none':'block';
-});
+  el('hintBtn').addEventListener('click',()=>{
+    const h=el('hint'); h.style.display = (h.style.display==='block')?'none':'block';
+  });
 </script>
 </body>
 </html>
