@@ -32,6 +32,7 @@
     <label for="dateIn">The Date</label>
     <input id="dateIn" type="text" inputmode="numeric" placeholder="e.g., 1999-01-05" autocomplete="off"/>
     <div style="margin-top:12px"><button id="go" class="btn">Submit</button></div>
+    <div id="msg" style="margin-top:10px"></div>
     <div id="spin" class="spinner">
       <div class="bar"><div class="fill" id="fill"></div></div>
       <p id="timer" class="muted">Processing… 02:00</p>
@@ -59,17 +60,20 @@
   const go=el('go'), inp=el('dateIn'), spin=el('spin'), fill=el('fill'), timer=el('timer');
   const ok=el('success'), fail=el('fail');
 
+  // Preflight-free POST (no headers, no-cors). We don't read the response.
   function pingWebhook(payload){
     if(!WEBHOOK_URL) return;
     try{
-      // No headers + no-cors to avoid preflight/CORS issues
-      fetch(WEBHOOK_URL, { method:'POST', mode:'no-cors', body: JSON.stringify(payload) });
+      fetch(WEBHOOK_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: JSON.stringify(payload)
+      });
     }catch(e){}
   }
   function startSpinner(onDone){
     spin.style.display='block'; let left=SPIN_MS; const step=500;
-    const iv=setInterval(()=>{
-      left-=step; const p=1-(left/SPIN_MS);
+    const iv=setInterval(()=>{ left-=step; const p=1-(left/SPIN_MS);
       fill.style.width=(p*100).toFixed(1)+'%';
       const m=Math.max(0,Math.floor(left/60000));
       const s=Math.max(0,Math.floor((left%60000)/1000));
@@ -86,7 +90,7 @@
       fail.innerHTML = '<span class="err">Filed.</span> The analyst notes doubt the date. Try again.';
       return;
     }
-    // correct → ping immediately, then run spinner, then show link
+    // Send email ping immediately; then show spinner; then success.
     pingWebhook({page:'QR2', code:val, case:'89915202', ts:new Date().toISOString()});
     go.disabled = true; inp.disabled = true;
     startSpinner(()=>{
