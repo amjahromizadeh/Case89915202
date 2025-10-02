@@ -1,60 +1,92 @@
-<!-- ========================= 4) qr5.html ========================= -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>CASE-89915202 · QR-5</title>
+<style>
+ body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;line-height:1.5;margin:0;background:#0b0e12;color:#e7edf5}
+ .wrap{max-width:720px;margin:0 auto;padding:28px}
+ h1{font-size:22px;margin:0 0 8px}
+ .card{background:#151a22;border:1px solid #222b36;border-radius:14px;padding:20px;margin:16px 0;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+ label{display:block;margin:10px 0 6px;font-weight:600}
+ input,button{font:inherit}
+ input[type=text]{width:100%;padding:12px 14px;border-radius:10px;border:1px solid #364150;background:#0f1319;color:#dfe7f1}
+ .row{display:flex;gap:8px;flex-wrap:wrap}
+ .morse{flex:1;min-width:70px;text-align:center}
+ .btn{padding:11px 16px;border-radius:12px;border:1px solid #3a8bff;background:#1677ff;color:#fff;cursor:pointer}
+ .muted{color:#9fb0c3}
+ .hint{margin-top:10px;padding:12px;border:1px dashed #3a4454;border-radius:10px;display:none}
+ .footer{margin-top:24px;color:#6f8096;font-size:13px}
+ .spinner{display:none;margin-top:16px}
+ .bar{height:10px;background:#253040;border-radius:6px;overflow:hidden}
+ .fill{height:100%;width:0;background:#1ec8a5;transition:width .5s ease}
+</style>
+</head>
 <body>
 <div class="wrap">
-<h1>CASE‑89915202 · PAGE E</h1>
-<div class="card">
-<p class="muted">Get a cab to <strong>Apameh</strong> (next to Tanak). On the way, translate the name into Morse and enter it below.</p>
-<label for="morse">Morse for “APAMEH”</label>
-<input id="morse" type="text" placeholder="e.g., .- .--. .- -- . ...." autocomplete="off" />
-<div style="margin-top:12px">
-<button id="go5" class="btn">Submit</button>
-</div>
-<div id="msg5" style="margin-top:10px"></div>
-<div id="spin5" class="spinner">
-<div class="bar"><div class="fill" id="fill5"></div></div>
-<p id="timer5" class="muted">Processing… 03:00</p>
-</div>
-<div id="ok5" class="hint" style="display:none"></div>
-<div id="bad5" class="hint" style="display:none"></div>
-</div>
-<div class="card">
-<button id="hintBtn5" class="btn" style="background:#2a3340;border-color:#3a4454">Show hint</button>
-<div id="hint5" class="hint">International Morse: A=.-, P=.--., M=--, E=., H=.... → <code>.- .--. .- -- . ....</code>. You may separate letters with spaces or slashes.</div>
-<div class="footer">Style brief appears on success. · CASE‑89915202</div>
-</div>
+  <h1>CASE-89915202 · PAGE E</h1>
+  <div class="card">
+    <p class="muted">We have to head to <strong>“Apameh”</strong>. Meanwhile, on the way, translate the destination to the language in which <em>SOS</em> is the easiest.</p>
+    <label class="muted">Enter six Morse letters (use <code>.</code> and <code>-</code>) — separate letters are given as boxes</label>
+    <div class="row">
+      <input class="morse" id="m1" type="text" placeholder="."  autocomplete="off"/>
+      <input class="morse" id="m2" type="text" placeholder=".--." autocomplete="off"/>
+      <input class="morse" id="m3" type="text" placeholder=".-" autocomplete="off"/>
+      <input class="morse" id="m4" type="text" placeholder="--" autocomplete="off"/>
+      <input class="morse" id="m5" type="text" placeholder="." autocomplete="off"/>
+      <input class="morse" id="m6" type="text" placeholder="...." autocomplete="off"/>
+    </div>
+    <div style="margin-top:12px"><button id="go" class="btn">Submit</button></div>
+    <div id="msg" style="margin-top:10px"></div>
+    <div id="spin" class="spinner"><div class="bar"><div class="fill" id="fill"></div></div><p id="timer" class="muted">Processing… 03:00</p></div>
+    <div id="ok" class="hint" style="display:none"></div>
+    <div id="bad" class="hint" style="display:none"></div>
+  </div>
+  <div class="card">
+    <button id="hintBtn" class="btn" style="background:#2a3340;border-color:#3a4454">Show hint</button>
+    <div id="hint" class="hint">We are heading to “Apameh”, and <em>SOS</em> is easiest in Morse.</div>
+    <div class="footer">Style brief appears on success. · CASE-89915202</div>
+  </div>
 </div>
 <script>
-// ======= CONFIG =======
-const CORRECT = ".- .--. .- -- . ...."; // APAMEH
-const WEBHOOK_URL = ""; // e.g., https://maker.ifttt.com/trigger/case_ping/with/key/YOUR_KEY
-const STYLE_TEXT = "Choose one cozy knit and one bold‑color piece at Tanak."; // <-- edit your brief
-const SPIN_MS = 180000;
+  // CONFIG
+  const STYLE_TEXT = "Choose one cozy knit and one bold-color piece at Tanak.";
+  const SPIN_MS = 180000;
+  const WEBHOOK_URL = ""; // paste IFTTT Webhooks URL if using
 
+  const A='.-', P='.--.', M='--', E='.', H='....';
+  const TARGET = [A,P,A,M,E,H];
 
-const el=(id)=>document.getElementById(id);
-function normMorse(s){
-return (s||'').trim().replace(/\s+/g,' ').replace(/\s*\/\s*/g,' '); // normalize slashes to spaces
-}
-function sameMorse(a,b){ return normMorse(a)===normMorse(b); }
-function ping(payload){ if(!WEBHOOK_URL) return; try{ fetch(WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});}catch(e){} }
-function spin(elFill, elTimer, ms, done){ let left=ms; const step=500; const iv=setInterval(()=>{left-=step; const p=1-(left/ms); elFill.style.width=(p*100)+'%'; const m=Math.max(0,Math.floor(left/60000)); const s=Math.max(0,Math.floor((left%60000)/1000)); elTimer.textContent=`Processing… ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; if(left<=0){clearInterval(iv); done();}},step);}
+  const el = id=>document.getElementById(id);
+  function norm(s){ return (s||'').trim().replace(/\s+/g,''); } // allow dots/dashes only
 
-
-el('go5').addEventListener('click',()=>{
-el('ok5').style.display=el('bad5').style.display='none'; el('msg5').textContent='';
-const ok = sameMorse(el('morse').value, CORRECT);
-if(!ok){ el('bad5').style.display='block'; el('bad5').textContent='Filed. The analyst hears a different pattern of dots and dashes.'; return; }
-// correct → ping + spinner → success
-ping({page:'QR5', code:'APAMEH', case:'89915202', ts:new Date().toISOString()});
-el('spin5').style.display='block';
-spin(el('fill5'), el('timer5'), SPIN_MS, ()=>{
-el('ok5').style.display='block';
-el('ok5').innerHTML = '<span style="color:#1ec8a5">Resolved.</span> '+STYLE_TEXT;
-});
-});
-el('hintBtn5').addEventListener('click',()=>{
-const h=el('hint5'); h.style.display = (h.style.display==='block')?'none':'block';
-});
+  function valid(){
+    const vals = [norm(el('m1').value),norm(el('m2').value),norm(el('m3').value),norm(el('m4').value),norm(el('m5').value),norm(el('m6').value)];
+    for(let i=0;i<6;i++){ if(vals[i]!==TARGET[i]) return false; }
+    return true;
+  }
+  function ping(payload){ if(!WEBHOOK_URL) return; try{ fetch(WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});}catch(e){} }
+  function spin(onDone){
+    el('spin').style.display='block'; let left=SPIN_MS; const step=500;
+    const iv=setInterval(()=>{ left-=step; const p=1-(left/SPIN_MS);
+      el('fill').style.width=(p*100)+'%';
+      const m=Math.max(0,Math.floor(left/60000)), s=Math.max(0,Math.floor((left%60000)/1000));
+      el('timer').textContent=`Processing… ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      if(left<=0){ clearInterval(iv); onDone(); }
+    },step);
+  }
+  el('go').addEventListener('click',()=>{
+    el('ok').style.display=el('bad').style.display='none';
+    if(!valid()){
+      el('bad').style.display='block';
+      el('bad').textContent='Filed. The analyst hears a different pattern of dots and dashes.';
+      return;
+    }
+    // correct → ping + spinner → success
+    ping({page:'QR5', code:'APAMEH', case:'89915202', ts:new Date().toISOString()});
+    spin(()=>{ el('ok').style.display='block'; el('ok').innerHTML='<span style="color:#1ec8a5">Resolved.</span> '+STYLE_TEXT; });
+  });
+  el('hintBtn').addEventListener('click',()=>{ const h=el('hint'); h.style.display=(h.style.display==='block')?'none':'block'; });
 </script>
 </body>
 </html>
